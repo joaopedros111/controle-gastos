@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Controle de Gastos</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <h1>Controle de Gastos</h1>
+
+  <form id="form-gasto">
+    <input type="date" id="data" required>
+    <input type="text" id="descricao" placeholder="Descrição" required>
+
+    <select id="categoria" required>
+      <option value="">Categoria</option>
+      <option>Alimentação</option>
+      <option>Transporte</option>
+      <option>Moradia</option>
+      <option>Lazer</option>
+      <option>Saúde</option>
+      <option>Outros</option>
+    </select>
+
+    <select id="tipo" required>
+      <option value="despesa">Despesa</option>
+      <option value="receita">Receita</option>
+    </select>
+
+    <input type="number" id="valor" placeholder="Valor" step="0.01" required>
+
+    <button type="submit">Adicionar</button>
+  </form>
+
+<div class="resumo">
+
+  <div class="card receita">
+    <h3>Receitas</h3>
+    <p id="receitas">R$ 0,00</p>
+  </div>
+
+  <div class="card despesa">
+    <h3>Despesas</h3>
+    <p id="despesas">R$ 0,00</p>
+  </div>
+
+  <div class="card saldo">
+    <h3>Saldo</h3>
+    <p id="saldo">R$ 0,00</p>
+  </div>
+
+</div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Data</th>
+        <th>Descrição</th>
+        <th>Categoria</th>
+        <th>Tipo</th>
+        <th>Valor</th>
+      </tr>
+    </thead>
+    <tbody id="lista-gastos"></tbody>
+  </table>
+
+  <script src="script.js"></script>
+</body>
+</html>
