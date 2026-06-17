@@ -1,3 +1,6 @@
+const exportarBackup = document.getElementById("exportar-backup");
+const importarBackup = document.getElementById("importar-backup");
+const botaoImportar = document.getElementById("botao-importar");
 const form = document.getElementById("form-gasto");
 const listaGastos = document.getElementById("lista-gastos");
 const botaoSubmit = document.getElementById("botao-submit");
@@ -196,6 +199,54 @@ cancelarEdicao.addEventListener("click", function () {
   form.reset();
   botaoSubmit.textContent = "Adicionar";
   cancelarEdicao.style.display = "none";
+});
+
+exportarBackup.addEventListener("click", function () {
+  const dados = JSON.stringify(gastos, null, 2);
+  const blob = new Blob([dados], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "backup-controle-gastos.json";
+  link.click();
+
+  URL.revokeObjectURL(url);
+});
+
+botaoImportar.addEventListener("click", function () {
+  importarBackup.click();
+});
+
+importarBackup.addEventListener("change", function (event) {
+  const arquivo = event.target.files[0];
+
+  if (!arquivo) {
+    return;
+  }
+
+  const leitor = new FileReader();
+
+  leitor.onload = function (e) {
+    try {
+      const dadosImportados = JSON.parse(e.target.result);
+
+      if (!Array.isArray(dadosImportados)) {
+        alert("Arquivo de backup inválido.");
+        return;
+      }
+
+      gastos = dadosImportados;
+      salvarGastos();
+      renderizarGastos();
+
+      alert("Backup importado com sucesso!");
+    } catch (erro) {
+      alert("Erro ao importar backup.");
+    }
+  };
+
+  leitor.readAsText(arquivo);
 });
 
 renderizarGastos();
