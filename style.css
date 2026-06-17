@@ -12,9 +12,8 @@ h1 {
 
 form {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
     gap: 10px;
-    background: white;
     padding: 20px;
     border-radius: 8px;
     margin-bottom: 20px;
@@ -353,4 +352,11 @@ td button:last-child:hover {
     width: 48%;
     display: inline-block;
   }
+}
+
+form input,
+form select,
+form button {
+    width: 100%;
+    box-sizing: border-box;
 }
