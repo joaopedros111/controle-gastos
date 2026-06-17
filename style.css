@@ -100,3 +100,85 @@ tr:nth-child(even) {
 .saldo {
     border-left: 5px solid blue;
 }
+
+.receita-texto {
+  color: green;
+  font-weight: bold;
+}
+
+.despesa-texto {
+  color: red;
+  font-weight: bold;
+}
+
+.saldo-positivo {
+  color: green;
+}
+
+.saldo-negativo {
+  color: red;
+}
+
+body {
+  background: #121212;
+  color: #f1f1f1;
+}
+
+form,
+.resumo,
+.filtro,
+.grafico,
+table {
+  background: #1e1e1e;
+}
+
+input,
+select,
+button {
+  background: #2a2a2a;
+  color: #f1f1f1;
+  border: 1px solid #444;
+}
+
+input::placeholder {
+  color: #aaa;
+}
+
+.card {
+  background: #2a2a2a;
+}
+
+th {
+  background: #2a2a2a;
+}
+
+td,
+th {
+  border-color: #444;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:hover {
+  background: #3a3a3a;
+}
+
+.categorias-resumo {
+  background: #1e1e1e;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.categoria-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  border-bottom: 1px solid #444;
+}
+
+.categoria-item:last-child {
+  border-bottom: none;
+}

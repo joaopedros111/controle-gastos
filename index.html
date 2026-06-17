@@ -13,15 +13,19 @@
     <input type="date" id="data" required>
     <input type="text" id="descricao" placeholder="Descrição" required>
 
-    <select id="categoria" required>
-      <option value="">Categoria</option>
-      <option>Alimentação</option>
-      <option>Transporte</option>
-      <option>Moradia</option>
-      <option>Lazer</option>
-      <option>Saúde</option>
-      <option>Outros</option>
-    </select>
+      <select id="categoria" required>
+        <option value="">Categoria</option>
+        <option>Aluguel</option>
+        <option>Moto</option>
+        <option>Gasolina</option>
+        <option>Mercado</option>
+        <option>Lazer</option>
+        <option>Erva</option>
+        <option>Elise</option>
+        <option>Cerveja</option>
+        <option>Salário</option>
+        <option>Outros</option>
+      </select>
 
     <select id="tipo" required>
       <option value="despesa">Despesa</option>
@@ -30,8 +34,19 @@
 
     <input type="number" id="valor" placeholder="Valor" step="0.01" required>
 
-    <button type="submit">Adicionar</button>
+    <button type="submit" id="botao-submit">Adicionar</button>
+<button type="button" id="cancelar-edicao" style="display: none;">Cancelar</button>
+
   </form>
+  
+<div class="filtro">
+  <label for="filtro-mes">Filtrar por mês:</label>
+  <input type="month" id="filtro-mes">
+
+  <input type="text" id="busca" placeholder="Buscar descrição ou categoria...">
+
+  <button type="button" id="limpar-filtro">Limpar filtro</button>
+</div>
 
 <div class="resumo">
 
@@ -52,15 +67,23 @@
 
 </div>
 
+<div class="categorias-resumo">
+  <h2>Gastos por categoria</h2>
+  <div id="lista-categorias"></div>
+</div>
+
   <table>
     <thead>
+
       <tr>
         <th>Data</th>
         <th>Descrição</th>
         <th>Categoria</th>
         <th>Tipo</th>
         <th>Valor</th>
+        <th>Ações</th>
       </tr>
+
     </thead>
     <tbody id="lista-gastos"></tbody>
   </table>
@@ -68,3 +91,4 @@
   <script src="script.js"></script>
 </body>
 </html>
+

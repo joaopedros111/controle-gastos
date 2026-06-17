@@ -1,92 +1,209 @@
+const busca = document.getElementById("busca");
 const form = document.getElementById("form-gasto");
 const listaGastos = document.getElementById("lista-gastos");
-const saldoElemento = document.getElementById("saldo");
-const receitasElemento = document.getElementById("receitas");
-const despesasElemento = document.getElementById("despesas");
+const botaoSubmit = document.getElementById("botao-submit");
+const cancelarEdicao = document.getElementById("cancelar-edicao");
+const filtroMes = document.getElementById("filtro-mes");
+const limparFiltro = document.getElementById("limpar-filtro");
 
+let indiceEditando = null;
 let gastos = JSON.parse(localStorage.getItem("gastos")) || [];
 
-atualizarTela();
-
 form.addEventListener("submit", function (event) {
-    event.preventDefault();
+  event.preventDefault();
 
-    const gasto = {
-        data: document.getElementById("data").value,
-        descricao: document.getElementById("descricao").value,
-        categoria: document.getElementById("categoria").value,
-        tipo: document.getElementById("tipo").value,
-        valor: Number(document.getElementById("valor").value)
-    };
+  const gasto = {
+    data: document.getElementById("data").value,
+    descricao: document.getElementById("descricao").value,
+    categoria: document.getElementById("categoria").value,
+    tipo: document.getElementById("tipo").value,
+    valor: Number(document.getElementById("valor").value)
+  };
 
+  if (indiceEditando === null) {
     gastos.push(gasto);
+  } else {
+    gastos[indiceEditando] = gasto;
+    indiceEditando = null;
+    botaoSubmit.textContent = "Adicionar";
+    cancelarEdicao.style.display = "none";
+  }
 
-    salvarDados();
-
-    form.reset();
-    atualizarTela();
+  salvarGastos();
+  renderizarGastos();
+  form.reset();
 });
 
-function salvarDados() {
-    localStorage.setItem("gastos", JSON.stringify(gastos));
+filtroMes.addEventListener("change", renderizarGastos);
+busca.addEventListener("input", renderizarGastos);
+
+limparFiltro.addEventListener("click", function () {
+  filtroMes.value = "";
+  busca.value = "";
+  renderizarGastos();
+});
+
+function salvarGastos() {
+  localStorage.setItem("gastos", JSON.stringify(gastos));
 }
 
-function atualizarTela() {
-    listaGastos.innerHTML = "";
+function pegarGastosFiltrados() {
+  const mesSelecionado = filtroMes.value;
+  const textoBusca = busca.value.toLowerCase();
 
-    let saldo = 0;
-    let receitas = 0;
-    let despesas = 0;
+  return gastos.filter(gasto => {
+    const passaMes =
+      !mesSelecionado || gasto.data.startsWith(mesSelecionado);
 
-    gastos.forEach((gasto, indice) => {
+    const passaBusca =
+      gasto.descricao.toLowerCase().includes(textoBusca) ||
+      gasto.categoria.toLowerCase().includes(textoBusca);
 
-        const linha = document.createElement("tr");
-
-       if (gasto.tipo === "receita") {
-           receitas += gasto.valor;
-           saldo += gasto.valor;
-       } else {
-           despesas += gasto.valor;
-           saldo -= gasto.valor;
-       }
-
-        linha.innerHTML = `
-            <td>${gasto.data}</td>
-            <td>${gasto.descricao}</td>
-            <td>${gasto.categoria}</td>
-            <td>${gasto.tipo}</td>
-            <td>R$ ${gasto.valor.toFixed(2)}</td>
-            <td>
-                <button onclick="removerGasto(${indice})">
-                    Excluir
-                </button>
-            </td>
-        `;
-
-        listaGastos.appendChild(linha);
-    });
-
-receitasElemento.textContent =
-    receitas.toLocaleString('pt-BR', {
-        style: 'currency',
-        currency: 'BRL'
-    });
-
-despesasElemento.textContent =
-    despesas.toLocaleString('pt-BR', {
-        style: 'currency',
-        currency: 'BRL'
-    });
-
-saldoElemento.textContent =
-    saldo.toLocaleString('pt-BR', {
-        style: 'currency',
-        currency: 'BRL'
-    });}
-
-function removerGasto(indice) {
-    gastos.splice(indice, 1);
-
-    salvarDados();
-    atualizarTela();
+    return passaMes && passaBusca;
+  });
 }
+
+function renderizarGastos() {
+  listaGastos.innerHTML = "";
+
+  const gastosFiltrados = pegarGastosFiltrados();
+
+  gastosFiltrados.forEach(gasto => {
+    const indexReal = gastos.indexOf(gasto);
+    const linha = document.createElement("tr");
+
+    linha.innerHTML = `
+      <td>${gasto.data}</td>
+      <td>${gasto.descricao}</td>
+      <td>${gasto.categoria}</td>
+      <td class="${gasto.tipo === "receita" ? "receita-texto" : "despesa-texto"}">
+        ${gasto.tipo}
+      </td>
+      <td class="${gasto.tipo === "receita" ? "receita-texto" : "despesa-texto"}">
+        ${gasto.valor.toLocaleString("pt-BR", {
+          style: "currency",
+          currency: "BRL"
+        })}
+      </td>
+      <td>
+        <button onclick="editarGasto(${indexReal})">Editar</button>
+        <button onclick="excluirGasto(${indexReal})">Excluir</button>
+      </td>
+    `;
+
+    listaGastos.appendChild(linha);
+  });
+
+  atualizarResumo(gastosFiltrados);
+  atualizarCategorias(gastosFiltrados);
+}
+
+function atualizarResumo(lista) {
+  let totalReceitas = 0;
+  let totalDespesas = 0;
+
+  lista.forEach(gasto => {
+    if (gasto.tipo === "receita") {
+      totalReceitas += Number(gasto.valor);
+    } else {
+      totalDespesas += Number(gasto.valor);
+    }
+  });
+
+  const saldo = totalReceitas - totalDespesas;
+  const saldoElemento = document.getElementById("saldo");
+
+  saldoElemento.classList.remove("saldo-positivo", "saldo-negativo");
+
+  if (saldo >= 0) {
+    saldoElemento.classList.add("saldo-positivo");
+  } else {
+    saldoElemento.classList.add("saldo-negativo");
+  }
+
+  document.getElementById("receitas").textContent =
+    totalReceitas.toLocaleString("pt-BR", {
+      style: "currency",
+      currency: "BRL"
+    });
+
+  document.getElementById("despesas").textContent =
+    totalDespesas.toLocaleString("pt-BR", {
+      style: "currency",
+      currency: "BRL"
+    });
+
+  document.getElementById("saldo").textContent =
+    saldo.toLocaleString("pt-BR", {
+      style: "currency",
+      currency: "BRL"
+    });
+}
+
+function atualizarCategorias(lista) {
+  const listaCategorias = document.getElementById("lista-categorias");
+  listaCategorias.innerHTML = "";
+
+  const despesas = lista.filter(gasto => gasto.tipo === "despesa");
+  const totaisPorCategoria = {};
+
+  despesas.forEach(gasto => {
+    if (!totaisPorCategoria[gasto.categoria]) {
+      totaisPorCategoria[gasto.categoria] = 0;
+    }
+
+    totaisPorCategoria[gasto.categoria] += Number(gasto.valor);
+  });
+
+  const categoriasOrdenadas = Object.entries(totaisPorCategoria)
+    .sort((a, b) => b[1] - a[1]);
+
+  if (categoriasOrdenadas.length === 0) {
+    listaCategorias.innerHTML = "<p>Nenhuma despesa registrada.</p>";
+    return;
+  }
+
+  categoriasOrdenadas.forEach(([categoria, valor]) => {
+    const item = document.createElement("div");
+    item.classList.add("categoria-item");
+
+    item.innerHTML = `
+      <span>${categoria}</span>
+      <strong>${valor.toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL"
+      })}</strong>
+    `;
+
+    listaCategorias.appendChild(item);
+  });
+}
+
+function excluirGasto(index) {
+  gastos.splice(index, 1);
+  salvarGastos();
+  renderizarGastos();
+}
+
+function editarGasto(index) {
+  const gasto = gastos[index];
+
+  document.getElementById("data").value = gasto.data;
+  document.getElementById("descricao").value = gasto.descricao;
+  document.getElementById("categoria").value = gasto.categoria;
+  document.getElementById("tipo").value = gasto.tipo;
+  document.getElementById("valor").value = gasto.valor;
+
+  indiceEditando = index;
+  botaoSubmit.textContent = "Salvar edição";
+  cancelarEdicao.style.display = "inline-block";
+}
+
+cancelarEdicao.addEventListener("click", function () {
+  indiceEditando = null;
+  form.reset();
+  botaoSubmit.textContent = "Adicionar";
+  cancelarEdicao.style.display = "none";
+});
+
+renderizarGastos();
