@@ -19,19 +19,6 @@ https://joaopedros111.github.io/controle-gastos/
 * Layout responsivo para celular
 * Aplicativo instalável (PWA)
 
-## 📂 Categorias
-
-* Aluguel
-* Moto
-* Gasolina
-* Mercado
-* Lazer
-* Erva
-* Elise
-* Cerveja
-* Salário
-* Outros
-
 ## 🛠️ Tecnologias utilizadas
 
 * HTML5
