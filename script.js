@@ -1,10 +1,7 @@
-const busca = document.getElementById("busca");
 const form = document.getElementById("form-gasto");
 const listaGastos = document.getElementById("lista-gastos");
 const botaoSubmit = document.getElementById("botao-submit");
 const cancelarEdicao = document.getElementById("cancelar-edicao");
-const filtroMes = document.getElementById("filtro-mes");
-const limparFiltro = document.getElementById("limpar-filtro");
 
 let indiceEditando = null;
 let gastos = JSON.parse(localStorage.getItem("gastos")) || [];
@@ -34,47 +31,29 @@ form.addEventListener("submit", function (event) {
   form.reset();
 });
 
-filtroMes.addEventListener("change", renderizarGastos);
-busca.addEventListener("input", renderizarGastos);
-
-limparFiltro.addEventListener("click", function () {
-  filtroMes.value = "";
-  busca.value = "";
-  renderizarGastos();
-});
-
 function salvarGastos() {
   localStorage.setItem("gastos", JSON.stringify(gastos));
-}
-
-function pegarGastosFiltrados() {
-  const mesSelecionado = filtroMes.value;
-  const textoBusca = busca.value.toLowerCase();
-
-  return gastos.filter(gasto => {
-    const passaMes =
-      !mesSelecionado || gasto.data.startsWith(mesSelecionado);
-
-    const passaBusca =
-      gasto.descricao.toLowerCase().includes(textoBusca) ||
-      gasto.categoria.toLowerCase().includes(textoBusca);
-
-    return passaMes && passaBusca;
-  });
 }
 
 function renderizarGastos() {
   listaGastos.innerHTML = "";
 
-  const gastosFiltrados = pegarGastosFiltrados();
+const gastosFiltrados = gastos;
 
   gastosFiltrados.forEach(gasto => {
+const data = new Date(gasto.data + "T00:00:00");
+
+const mesAno = data.toLocaleDateString("pt-BR", {
+  month: "short",
+  year: "numeric"
+});
     const indexReal = gastos.indexOf(gasto);
     const linha = document.createElement("tr");
 
     linha.innerHTML = `
-      <td>${gasto.data}</td>
-      <td>${gasto.descricao}</td>
+<td>${mesAno}</td>
+<td>${gasto.descricao}</td>
+    
       <td>${gasto.categoria}</td>
       <td class="${gasto.tipo === "receita" ? "receita-texto" : "despesa-texto"}">
         ${gasto.tipo}
@@ -85,10 +64,15 @@ function renderizarGastos() {
           currency: "BRL"
         })}
       </td>
-      <td>
-        <button onclick="editarGasto(${indexReal})">Editar</button>
-        <button onclick="excluirGasto(${indexReal})">Excluir</button>
-      </td>
+ <td>
+  <button class="btn-editar" onclick="editarGasto(${indexReal})">
+    Editar
+  </button>
+
+  <button class="btn-excluir" onclick="excluirGasto(${indexReal})">
+    Excluir
+  </button>
+</td>
     `;
 
     listaGastos.appendChild(linha);
