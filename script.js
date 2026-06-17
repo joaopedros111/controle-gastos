@@ -199,3 +199,7 @@ cancelarEdicao.addEventListener("click", function () {
 });
 
 renderizarGastos();
+
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("./service-worker.js");
+}
