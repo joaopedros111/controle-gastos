@@ -240,3 +240,53 @@ td button:last-child:hover {
 .btn-excluir:hover {
   background-color: #bb2d3b;
 }
+
+@media (max-width: 768px) {
+  body {
+    margin: 0;
+    padding: 10px;
+    max-width: 100%;
+  }
+
+  h1 {
+    font-size: 24px;
+  }
+
+  form {
+    flex-direction: column;
+  }
+
+  input,
+  select,
+  button {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .resumo {
+    flex-direction: column;
+  }
+
+  .categorias-resumo {
+    padding: 15px;
+  }
+
+  table {
+    font-size: 13px;
+  }
+
+  th,
+  td {
+    padding: 8px;
+  }
+
+  td button {
+    width: 100%;
+    margin-bottom: 5px;
+  }
+}
+
+.tabela-container {
+  width: 100%;
+  overflow-x: auto;
+}

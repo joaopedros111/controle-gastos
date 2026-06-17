@@ -38,23 +38,31 @@ function salvarGastos() {
 function renderizarGastos() {
   listaGastos.innerHTML = "";
 
-const gastosFiltrados = gastos;
-
-  gastosFiltrados.forEach(gasto => {
-const data = new Date(gasto.data + "T00:00:00");
-
-const mesAno = data.toLocaleDateString("pt-BR", {
-  month: "short",
-  year: "numeric"
+const gastosFiltrados = [...gastos].sort((a, b) => {
+  return new Date(b.data) - new Date(a.data);
 });
-    const indexReal = gastos.indexOf(gasto);
-    const linha = document.createElement("tr");
 
-    linha.innerHTML = `
-<td>${mesAno}</td>
+gastosFiltrados.forEach(gasto => {
+  const data = new Date(gasto.data + "T00:00:00");
+
+const dia = data.getDate().toString().padStart(2, "0");
+
+const mes = data.toLocaleDateString("pt-BR", {
+  month: "short"
+}).replace(".", "");
+
+const ano = data.getFullYear();
+
+const dataFormatada = `${dia} ${mes} ${ano}`;
+
+  const indexReal = gastos.indexOf(gasto);
+  const linha = document.createElement("tr");
+
+linha.innerHTML = `
+<td>${dataFormatada}</td>
 <td>${gasto.descricao}</td>
-    
-      <td>${gasto.categoria}</td>
+<td>${gasto.categoria}</td>
+
       <td class="${gasto.tipo === "receita" ? "receita-texto" : "despesa-texto"}">
         ${gasto.tipo}
       </td>
